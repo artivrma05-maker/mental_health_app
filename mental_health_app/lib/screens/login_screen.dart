@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'signup_screen.dart';
+import 'home_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -28,10 +29,18 @@ class LoginScreen extends StatelessWidget {
             ),
             SizedBox(height: 30),
             ElevatedButton(
-              onPressed: () {},
-              child: Text("Login"),
-            ),
-            const SizedBox(height: 20),
+  onPressed: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HomeScreen(),
+      ),
+    );
+  },
+  child: const Text("Login"),
+),
+
+const SizedBox(height: 20),
 
 TextButton(
   onPressed: () {
@@ -44,6 +53,8 @@ TextButton(
   },
   child: const Text("Don't have an account? Sign Up"),
 ),
+
+
           ],
         ),
       ),
