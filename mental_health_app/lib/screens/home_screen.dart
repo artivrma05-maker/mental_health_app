@@ -1,27 +1,43 @@
 import 'package:flutter/material.dart';
+import 'mood_tracker_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
-  Widget buildCard(IconData icon, String title) {
-    return Card(
-      elevation: 4,
-      child: SizedBox(
-        height: 120,
-        width: 150,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40, color: Colors.teal),
-            const SizedBox(height: 10),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+  Widget buildCard(
+    BuildContext context,
+    IconData icon,
+    String title,
+    Widget screen,
+  ) {
+    return GestureDetector(
+    onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => const MoodTrackerScreen(),
+    ),
+  );
+},
+      child: Card(
+        elevation: 4,
+        child: SizedBox(
+          height: 120,
+          width: 150,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 40, color: Colors.teal),
+              const SizedBox(height: 10),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -56,8 +72,18 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                buildCard(Icons.mood, "Mood Tracker"),
-                buildCard(Icons.chat, "AI Chat"),
+                buildCard(
+                  context,
+                  Icons.mood,
+                  "Mood Tracker",
+                  const MoodTrackerScreen(),
+                ),
+                buildCard(
+                  context,
+                  Icons.chat,
+                  "AI Chat",
+                  const HomeScreen(),
+                ),
               ],
             ),
 
@@ -66,8 +92,18 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                buildCard(Icons.book, "Journal"),
-                buildCard(Icons.self_improvement, "Meditation"),
+                buildCard(
+                  context,
+                  Icons.book,
+                  "Journal",
+                  const HomeScreen(),
+                ),
+                buildCard(
+                  context,
+                  Icons.self_improvement,
+                  "Meditation",
+                  const HomeScreen(),
+                ),
               ],
             ),
           ],
