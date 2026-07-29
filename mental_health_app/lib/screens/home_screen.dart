@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'login_screen.dart';
 import 'mood_tracker_screen.dart';
 import 'ai_chat_screen.dart';
 import 'journal_screen.dart';
@@ -7,6 +10,18 @@ import 'meditation_screen.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  Future<void> logout(BuildContext context) async {
+    await FirebaseAuth.instance.signOut();
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const LoginScreen(),
+      ),
+      (route) => false,
+    );
+  }
+
   Widget buildCard(
     BuildContext context,
     IconData icon,
@@ -14,14 +29,14 @@ class HomeScreen extends StatelessWidget {
     Widget screen,
   ) {
     return GestureDetector(
-    onTap: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => screen,
-    ),
-  );
-},
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => screen,
+          ),
+        );
+      },
       child: Card(
         elevation: 4,
         child: SizedBox(
@@ -30,7 +45,11 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 40, color: Colors.teal),
+              Icon(
+                icon,
+                size: 40,
+                color: Colors.teal,
+              ),
               const SizedBox(height: 10),
               Text(
                 title,
@@ -52,6 +71,16 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Mental Health"),
         centerTitle: true,
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: "Logout",
+            onPressed: () {
+              logout(context);
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

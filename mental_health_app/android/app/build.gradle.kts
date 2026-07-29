@@ -1,5 +1,8 @@
 plugins {
     id("com.android.application")
+    // START: FlutterFire Configuration
+    id("com.google.gms.google-services")
+    // END: FlutterFire Configuration
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -42,4 +45,35 @@ kotlin {
 
 flutter {
     source = "../.."
+}
+
+
+{
+  "project_info": {
+    "project_number": "712906820855",
+    "project_id": "mental-health-app-f2ce3",
+    "storage_bucket": "mental-health-app-f2ce3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:712906820855:android:26477bff0806eefcac17f2",
+        "android_client_info": {
+          "package_name": "com.example.mental_health_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuA_rtVRNE971J0WG3ygwsulaQsjW9i9Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
 }
