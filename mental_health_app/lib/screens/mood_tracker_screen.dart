@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/firestore_service.dart';
 
 class MoodTrackerScreen extends StatefulWidget {
   const MoodTrackerScreen({super.key});
@@ -10,8 +11,11 @@ class MoodTrackerScreen extends StatefulWidget {
 class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
   List<Map<String, String>> moodHistory = [];
 
-  void saveMood(String emoji, String mood) {
-    final now = DateTime.now();
+  Future<void> saveMood(String emoji, String mood) async {
+  final now = DateTime.now();
+
+  try {
+    await FirestoreService.saveMood(mood);
 
     setState(() {
       moodHistory.insert(0, {
@@ -23,15 +27,20 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("$mood mood saved successfully"),
-      ),
+      SnackBar(content: Text("$mood Mood Saved")),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error: $e")),
     );
   }
+}
 
   Widget moodButton(String emoji, String mood) {
     return GestureDetector(
-      onTap: () => saveMood(emoji, mood),
+      onTap: () async {
+        await saveMood(emoji, mood);
+      },
       child: Card(
         elevation: 4,
         child: SizedBox(
@@ -118,40 +127,98 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
             const SizedBox(height: 10),
 
             Expanded(
-              child: moodHistory.isEmpty
-                  ? const Center(
-                      child: Text(
-                        "No Mood Selected Yet",
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    )
-                  : ListView.builder(
-                      itemCount: moodHistory.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                          child: ListTile(
-                            leading: Text(
-                              moodHistory[index]["emoji"]!,
-                              style: const TextStyle(fontSize: 28),
-                            ),
-                            title: Text(moodHistory[index]["mood"]!),
-                            subtitle: Text(moodHistory[index]["date"]!),
-                            trailing: IconButton(
-                              icon: const Icon(
-                                Icons.delete,
-                                color: Colors.red,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  moodHistory.removeAt(index);
-                                });
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+  child: StreamBuilder(
+    stream: FirestoreService.getMoods(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      if (snapshot.connectionState == ConnectionState.waiting) {
+  return const Center(
+    child: CircularProgressIndicator(),
+  );
+}
+
+if (snapshot.hasError) {
+  return Center(
+    child: Text("Error: ${snapshot.error}"),
+  );
+}
+
+   if (snapshot.connectionState == ConnectionState.waiting) {
+  return const Center(
+    child: CircularProgressIndicator(),
+  );
+}
+
+if (snapshot.hasError) {
+  return Center(
+    child: Text("Error: ${snapshot.error}"),
+  );
+}
+
+if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+  return const Center(
+    child: Text(
+      "No Mood Selected Yet",
+      style: TextStyle(fontSize: 18),
+    ),
+  );
+}
+
+      final moods = snapshot.data!.docs;
+
+      return ListView.builder(
+        itemCount: moods.length,
+        itemBuilder: (context, index) {
+          final data = moods[index].data() as Map<String, dynamic>;
+
+          String emoji = "😐";
+
+          switch (data["mood"]) {
+            case "Happy":
+              emoji = "😀";
+              break;
+            case "Calm":
+              emoji = "😊";
+              break;
+            case "Neutral":
+              emoji = "😐";
+              break;
+            case "Sad":
+              emoji = "😢";
+              break;
+            case "Angry":
+              emoji = "😡";
+              break;
+          }
+
+          return Card(
+            child: ListTile(
+              leading: Text(
+                emoji,
+                style: const TextStyle(fontSize: 28),
+              ),
+              title: Text(data["mood"] ?? ""),
+              subtitle: Text(
+                data["time"] == null
+                    ? ""
+                    : data["time"].toDate().toString(),
+              ),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () async {
+                  await FirestoreService.deleteMood(moods[index].id);
+                },
+              ),
             ),
+          );
+        },
+      );
+    },
+  ),
+)
           ],
         ),
       ),
