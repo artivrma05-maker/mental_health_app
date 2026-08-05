@@ -6,6 +6,7 @@ import 'mood_tracker_screen.dart';
 import 'ai_chat_screen.dart';
 import 'journal_screen.dart';
 import 'meditation_screen.dart';
+import 'analytics_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -138,6 +139,16 @@ class HomeScreen extends StatelessWidget {
                 ),
               ],
             ),
+            const SizedBox(height: 20),
+
+Center(
+  child: buildCard(
+    context,
+    Icons.bar_chart,
+    "Mood Analytics",
+    const AnalyticsScreen(),
+  ),
+),
           ],
         ),
       ),

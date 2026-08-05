@@ -29,4 +29,29 @@ class FirestoreService {
   static Future<void> deleteMood(String id) async {
     await _firestore.collection("moods").doc(id).delete();
   }
+  static Future<Map<String, int>> getMoodCounts() async {
+  final user = FirebaseAuth.instance.currentUser;
+
+  if (user == null) return {};
+
+  final snapshot = await _firestore
+      .collection("moods")
+      .where("uid", isEqualTo: user.uid)
+      .get();
+
+  Map<String, int> counts = {
+    "Happy": 0,
+    "Calm": 0,
+    "Neutral": 0,
+    "Sad": 0,
+    "Angry": 0,
+  };
+
+  for (var doc in snapshot.docs) {
+    String mood = doc["mood"];
+    counts[mood] = (counts[mood] ?? 0) + 1;
+  }
+
+  return counts;
+}
 }
