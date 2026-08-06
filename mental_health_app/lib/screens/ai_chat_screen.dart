@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/gemini_service.dart';
+import '../services/firestore_service.dart';
 
 class AIChatScreen extends StatefulWidget {
   const AIChatScreen({super.key});
@@ -10,6 +11,8 @@ class AIChatScreen extends StatefulWidget {
 
 class _AIChatScreenState extends State<AIChatScreen> {
   final TextEditingController messageController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
+  final FocusNode messageFocus = FocusNode();
 
   List<Map<String, String>> messages = [];
 
@@ -28,6 +31,7 @@ class _AIChatScreenState extends State<AIChatScreen> {
 
       isLoading = true;
     });
+    await FirestoreService.saveChat("user", userMessage);
 
     messageController.clear();
 
@@ -42,6 +46,16 @@ class _AIChatScreenState extends State<AIChatScreen> {
 
       isLoading = false;
     });
+    await FirestoreService.saveChat("ai", aiReply);
+    messageFocus.requestFocus();
+    
+    Future.delayed(const Duration(milliseconds: 200), () {
+  scrollController.animateTo(
+    scrollController.position.maxScrollExtent,
+    duration: const Duration(milliseconds: 300),
+    curve: Curves.easeOut,
+  );
+});
   }
 
   Widget buildMessage(
@@ -106,6 +120,7 @@ class _AIChatScreenState extends State<AIChatScreen> {
                     ),
                   )
                 : ListView.builder(
+                  controller: scrollController,
                     padding: const EdgeInsets.all(12),
                     itemCount: messages.length,
                     itemBuilder: (context, index) {
@@ -117,11 +132,30 @@ class _AIChatScreenState extends State<AIChatScreen> {
                   ),
           ),
 
-          if (isLoading)
-            const Padding(
-              padding: EdgeInsets.all(8),
-              child: CircularProgressIndicator(),
+         if (isLoading)
+  const Padding(
+    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: Align(
+      alignment: Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          CircleAvatar(
+            radius: 15,
+            child: Icon(Icons.smart_toy, size: 18),
+          ),
+          SizedBox(width: 10),
+          Text(
+            "AI is typing...",
+            style: TextStyle(
+              fontSize: 16,
+              fontStyle: FontStyle.italic,
             ),
+          ),
+        ],
+      ),
+    ),
+  ),
 
           Padding(
             padding: const EdgeInsets.all(12),
@@ -130,6 +164,7 @@ class _AIChatScreenState extends State<AIChatScreen> {
                 Expanded(
                   child: TextField(
                     controller: messageController,
+                    focusNode: messageFocus,
                     decoration: const InputDecoration(
                       hintText: "Type your message...",
                       border: OutlineInputBorder(),
