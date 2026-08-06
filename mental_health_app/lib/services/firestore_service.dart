@@ -50,6 +50,27 @@ class FirestoreService {
       "time": FieldValue.serverTimestamp(),
     });
   }
+  static Future<void> saveJournal(String text) async {
+  final user = FirebaseAuth.instance.currentUser;
+
+  if (user == null) return;
+
+  await _firestore.collection("journals").add({
+    "uid": user.uid,
+    "text": text,
+    "time": FieldValue.serverTimestamp(),
+  });
+}
+// Get Journal History
+static Stream<QuerySnapshot> getJournals() {
+  final user = FirebaseAuth.instance.currentUser;
+
+  return _firestore
+      .collection("journals")
+      .where("uid", isEqualTo: user!.uid)
+      
+      .snapshots();
+}
 
   // Get Mood Counts for Analytics
   static Future<Map<String, int>> getMoodCounts() async {
