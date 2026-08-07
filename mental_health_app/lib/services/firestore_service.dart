@@ -33,6 +33,10 @@ class FirestoreService {
   static Future<void> deleteMood(String id) async {
     await _firestore.collection("moods").doc(id).delete();
   }
+  // Delete Journal
+static Future<void> deleteJournal(String id) async {
+  await _firestore.collection("journals").doc(id).delete();
+}
 
   // Save Chat
   static Future<void> saveChat(
@@ -71,6 +75,12 @@ static Stream<QuerySnapshot> getJournals() {
       
       .snapshots();
 }
+//static Future<void> deleteJournal(String id) async {
+  //await _firestore
+    //  .collection("journals")
+      //.doc(id)
+      //.delete();
+//}
 
   // Get Mood Counts for Analytics
   static Future<Map<String, int>> getMoodCounts() async {

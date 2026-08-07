@@ -95,15 +95,26 @@ Expanded(
               journals[index].data() as Map<String, dynamic>;
 
           return Card(
-            child: ListTile(
-              title: Text(data["text"] ?? ""),
-              subtitle: Text(
-                data["time"] == null
-                    ? ""
-                    : data["time"].toDate().toString(),
-              ),
-            ),
-          );
+  child: ListTile(
+    title: Text(data["text"] ?? ""),
+    subtitle: Text(
+      data["time"] == null
+          ? ""
+          : data["time"].toDate().toString(),
+    ),
+    trailing: IconButton(
+      icon: const Icon(
+        Icons.delete,
+        color: Colors.red,
+      ),
+      onPressed: () async {
+        await FirestoreService.deleteJournal(
+          journals[index].id,
+        );
+      },
+    ),
+  ),
+);
         },
       );
     },
