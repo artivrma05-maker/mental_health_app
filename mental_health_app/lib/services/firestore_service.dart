@@ -37,6 +37,16 @@ class FirestoreService {
 static Future<void> deleteJournal(String id) async {
   await _firestore.collection("journals").doc(id).delete();
 }
+// Update Journal
+static Future<void> updateJournal(
+  String id,
+  String text,
+) async {
+  await _firestore.collection("journals").doc(id).update({
+    "text": text,
+    "time": FieldValue.serverTimestamp(),
+  });
+}
 
   // Save Chat
   static Future<void> saveChat(

@@ -102,16 +102,64 @@ Expanded(
           ? ""
           : data["time"].toDate().toString(),
     ),
-    trailing: IconButton(
-      icon: const Icon(
-        Icons.delete,
-        color: Colors.red,
-      ),
-      onPressed: () async {
-        await FirestoreService.deleteJournal(
-          journals[index].id,
-        );
-      },
+    trailing: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: const Icon(
+            Icons.edit,
+            color: Colors.blue,
+          ),
+          onPressed: () {
+            final controller = TextEditingController(
+              text: data["text"],
+            );
+
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text("Edit Journal"),
+                  content: TextField(
+                    controller: controller,
+                    maxLines: 5,
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Cancel"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        await FirestoreService.updateJournal(
+                          journals[index].id,
+                          controller.text,
+                        );
+
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Update"),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        ),
+        IconButton(
+          icon: const Icon(
+            Icons.delete,
+            color: Colors.red,
+          ),
+          onPressed: () async {
+            await FirestoreService.deleteJournal(
+              journals[index].id,
+            );
+          },
+        ),
+      ],
     ),
   ),
 );
