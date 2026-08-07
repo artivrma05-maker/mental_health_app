@@ -7,6 +7,7 @@ import 'ai_chat_screen.dart';
 import 'journal_screen.dart';
 import 'meditation_screen.dart';
 import 'analytics_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -83,7 +84,9 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
+    
+      body: SingleChildScrollView(
+        child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,6 +98,7 @@ class HomeScreen extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
+        
             const SizedBox(height: 10),
             const Text(
               "How are you feeling today?",
@@ -144,6 +148,16 @@ class HomeScreen extends StatelessWidget {
 Center(
   child: buildCard(
     context,
+    Icons.person,
+    "Profile",
+    const ProfileScreen(),
+  ),
+),
+            const SizedBox(height: 20),
+
+Center(
+  child: buildCard(
+    context,
     Icons.bar_chart,
     "Mood Analytics",
     const AnalyticsScreen(),
@@ -151,6 +165,7 @@ Center(
 ),
           ],
         ),
+      ),
       ),
     );
   }

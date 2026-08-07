@@ -5,7 +5,9 @@ class FirestoreService {
   static final FirebaseFirestore _firestore =
       FirebaseFirestore.instance;
 
+  // =========================
   // Save Mood
+  // =========================
   static Future<void> saveMood(String mood) async {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -18,7 +20,9 @@ class FirestoreService {
     });
   }
 
+  // =========================
   // Get Mood History
+  // =========================
   static Stream<QuerySnapshot> getMoods() {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -29,26 +33,16 @@ class FirestoreService {
         .snapshots();
   }
 
+  // =========================
   // Delete Mood
+  // =========================
   static Future<void> deleteMood(String id) async {
     await _firestore.collection("moods").doc(id).delete();
   }
-  // Delete Journal
-static Future<void> deleteJournal(String id) async {
-  await _firestore.collection("journals").doc(id).delete();
-}
-// Update Journal
-static Future<void> updateJournal(
-  String id,
-  String text,
-) async {
-  await _firestore.collection("journals").doc(id).update({
-    "text": text,
-    "time": FieldValue.serverTimestamp(),
-  });
-}
 
+  // =========================
   // Save Chat
+  // =========================
   static Future<void> saveChat(
     String role,
     String text,
@@ -64,35 +58,57 @@ static Future<void> updateJournal(
       "time": FieldValue.serverTimestamp(),
     });
   }
+
+  // =========================
+  // Save Journal
+  // =========================
   static Future<void> saveJournal(String text) async {
-  final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
 
-  if (user == null) return;
+    if (user == null) return;
 
-  await _firestore.collection("journals").add({
-    "uid": user.uid,
-    "text": text,
-    "time": FieldValue.serverTimestamp(),
-  });
-}
-// Get Journal History
-static Stream<QuerySnapshot> getJournals() {
-  final user = FirebaseAuth.instance.currentUser;
+    await _firestore.collection("journals").add({
+      "uid": user.uid,
+      "text": text,
+      "time": FieldValue.serverTimestamp(),
+    });
+  }
 
-  return _firestore
-      .collection("journals")
-      .where("uid", isEqualTo: user!.uid)
-      
-      .snapshots();
-}
-//static Future<void> deleteJournal(String id) async {
-  //await _firestore
-    //  .collection("journals")
-      //.doc(id)
-      //.delete();
-//}
+  // =========================
+  // Get Journal History
+  // =========================
+  static Stream<QuerySnapshot> getJournals() {
+    final user = FirebaseAuth.instance.currentUser;
 
-  // Get Mood Counts for Analytics
+    return _firestore
+        .collection("journals")
+        .where("uid", isEqualTo: user!.uid)
+        .snapshots();
+  }
+
+  // =========================
+  // Delete Journal
+  // =========================
+  static Future<void> deleteJournal(String id) async {
+    await _firestore.collection("journals").doc(id).delete();
+  }
+
+  // =========================
+  // Update Journal
+  // =========================
+  static Future<void> updateJournal(
+    String id,
+    String text,
+  ) async {
+    await _firestore.collection("journals").doc(id).update({
+      "text": text,
+      "time": FieldValue.serverTimestamp(),
+    });
+  }
+
+  // =========================
+  // Mood Analytics
+  // =========================
   static Future<Map<String, int>> getMoodCounts() async {
     final user = FirebaseAuth.instance.currentUser;
 
@@ -117,5 +133,37 @@ static Stream<QuerySnapshot> getJournals() {
     }
 
     return counts;
+  }
+
+  // =========================
+  // Total Mood Entries
+  // =========================
+  static Future<int> getTotalMoods() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return 0;
+
+    final snapshot = await _firestore
+        .collection("moods")
+        .where("uid", isEqualTo: user.uid)
+        .get();
+
+    return snapshot.docs.length;
+  }
+
+  // =========================
+  // Total Journal Entries
+  // =========================
+  static Future<int> getTotalJournals() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) return 0;
+
+    final snapshot = await _firestore
+        .collection("journals")
+        .where("uid", isEqualTo: user.uid)
+        .get();
+
+    return snapshot.docs.length;
   }
 }
